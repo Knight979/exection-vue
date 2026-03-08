@@ -3,7 +3,7 @@
  * @version: 2.0.0
  * @Date: 2026-03-05 17:14:42
  * @LastEditors: Knight
- * @LastEditTime: 2026-03-08 20:13:03
+ * @LastEditTime: 2026-03-08 21:41:21
  */
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -11,6 +11,7 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [vue()],
+  base:'/',
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')
@@ -25,7 +26,7 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/case-zx-api/, '')
       }
-    }
+    },
   },
   build: {
     outDir: 'dist',
