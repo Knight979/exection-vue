@@ -3,12 +3,12 @@ import type { Case, CaseDetail, PageParams, PageResult } from '@/types'
 
 // 获取案件列表
 export function getCaseList(params: PageParams) {
-  return request.post<PageResult<Case>>('/case-zx-api/caseInfo/caseInfo/pageListCaseContract', params)
+  return request.post<PageResult<Case>>('/case-zx-api/caseInfo/caseInfo/pageListZxCase', params)
 }
 
 // 获取案件详情
 export function getCaseDetail(id: string) {
-  return request.get<CaseDetail>(`/case/detail/${id}`)
+  return request.post<CaseDetail>(`/case-zx-api/caseInfo/caseInfo/infoCaseInfo/i${id}`,)
 }
 
 // 创建案件

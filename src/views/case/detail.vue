@@ -438,10 +438,10 @@ const fetchCaseDetail = async () => {
     
     // TODO: 调用API获取数据
     const res = await getCaseDetail(caseId)
-    
+    console.log(res)
     // Mock数据
-    // await new Promise(resolve => setTimeout(resolve, 500))
-    // caseDetail.value = generateMockDetail(caseId)
+    await new Promise(resolve => setTimeout(resolve, 500))
+    caseDetail.value = generateMockDetail(caseId)
   } catch (error) {
     ElMessage.error('获取案件详情失败')
   } finally {

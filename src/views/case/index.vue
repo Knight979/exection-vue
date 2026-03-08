@@ -275,7 +275,7 @@ const fetchTableData = async () => {
     // Mock数据
     await new Promise(resolve => setTimeout(resolve, 500))
     tableData.value = res.list;
-    pagination.total = res.data.total;
+    pagination.total = res.total;
     loading.value = false;
   } catch (error) {
     ElMessage.error("获取案件列表失败");
@@ -284,47 +284,47 @@ const fetchTableData = async () => {
   }
 };
 // 获取案件状态
-const getCaseStatus = (status: number) => {
-  const statusMap: Record<number, string> = {
-    0: "pending",
-    1: "assigned",
-    2: "in_progress",
-    3: "settled",
-    4: "bad_debt"
-  };
-  return statusMap[status] || "pending";
-};
+// const getCaseStatus = (status: number) => {
+//   const statusMap: Record<number, string> = {
+//     0: "pending",
+//     1: "assigned",
+//     2: "in_progress",
+//     3: "settled",
+//     4: "bad_debt"
+//   };
+//   return statusMap[status] || "pending";
+// };
 // 生成Mock数据
-const generateMockData = (): Case[] => {
-  const statuses = [
-    "pending",
-    "assigned",
-    "in_progress",
-    "settled",
-    "bad_debt",
-  ];
-  const products = ["极速贷", "信用贷", "车贷通", "房贷宝"];
+// const generateMockData = (): Case[] => {
+//   const statuses = [
+//     "pending",
+//     "assigned",
+//     "in_progress",
+//     "settled",
+//     "bad_debt",
+//   ];
+//   const products = ["极速贷", "信用贷", "车贷通", "房贷宝"];
 
-  return Array.from({ length: pagination.pageSize }, (_, i) => ({
-    id: String(pagination.pageNum * pagination.pageSize + i),
-    dataId: String(1000 + i),
-    caseNo: `CASE${String(pagination.pageNum * pagination.pageSize + i + 1).padStart(6, "0")}`,
-    productId: i % 4,
-    productName: products[i % 4],
-    loanNo: `LOAN${String(10000 + i).padStart(8, "0")}`,
-    customerName: `客户${i + 1}`,
-    customerPhone: `138${String(10000000 + i).slice(0, 8)}`,
-    customerIdCard: `42010119900101${String(1000 + i).slice(0, 4)}`,
-    loanAmount: 10000 + i * 1000,
-    overdueAmount: 1000 + i * 100,
-    overdueDays: 10 + ((i * 5) % 90),
-    status: statuses[i % 5] as any,
-    assigneeId: i % 3 === 0 ? String(i % 5) : undefined,
-    assigneeName: i % 3 === 0 ? `催收员${(i % 5) + 1}` : undefined,
-    createTime: new Date().toISOString(),
-    updateTime: new Date().toISOString(),
-  }));
-};
+//   return Array.from({ length: pagination.pageSize }, (_, i) => ({
+//     id: String(pagination.pageNum * pagination.pageSize + i),
+//     dataId: String(1000 + i),
+//     caseNo: `CASE${String(pagination.pageNum * pagination.pageSize + i + 1).padStart(6, "0")}`,
+//     productId: i % 4,
+//     productName: products[i % 4],
+//     loanNo: `LOAN${String(10000 + i).padStart(8, "0")}`,
+//     customerName: `客户${i + 1}`,
+//     customerPhone: `138${String(10000000 + i).slice(0, 8)}`,
+//     customerIdCard: `42010119900101${String(1000 + i).slice(0, 4)}`,
+//     loanAmount: 10000 + i * 1000,
+//     overdueAmount: 1000 + i * 100,
+//     overdueDays: 10 + ((i * 5) % 90),
+//     status: statuses[i % 5] as any,
+//     assigneeId: i % 3 === 0 ? String(i % 5) : undefined,
+//     assigneeName: i % 3 === 0 ? `催收员${(i % 5) + 1}` : undefined,
+//     createTime: new Date().toISOString(),
+//     updateTime: new Date().toISOString(),
+//   }));
+// };
 
 // 格式化金额
 const formatAmount = (amount: number) => {
