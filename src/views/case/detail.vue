@@ -422,7 +422,7 @@ import { ArrowLeft, Plus, User, Edit } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import type { CaseDetail } from '@/types/case'
 import dayjs from 'dayjs'
-
+import { getCaseDetail } from '@/api/case'
 const router = useRouter()
 const route = useRoute()
 
@@ -435,12 +435,13 @@ const fetchCaseDetail = async () => {
   loading.value = true
   try {
     const caseId = route.params.id as string
+    
     // TODO: 调用API获取数据
-    // const res = await caseApi.getCaseDetail(caseId)
+    const res = await getCaseDetail(caseId)
     
     // Mock数据
-    await new Promise(resolve => setTimeout(resolve, 500))
-    caseDetail.value = generateMockDetail(caseId)
+    // await new Promise(resolve => setTimeout(resolve, 500))
+    // caseDetail.value = generateMockDetail(caseId)
   } catch (error) {
     ElMessage.error('获取案件详情失败')
   } finally {
@@ -597,9 +598,13 @@ const generateMockDetail = (id: string): CaseDetail => {
 }
 
 // 格式化金额
-const formatAmount = (amount: number) => {
+const formatAmount = (amount: number | undefined | null) => {
+  if (amount === undefined || amount === null) {
+    return '¥0.00'
+  }
   return `¥${amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`
 }
+
 
 // 格式化日期
 const formatDate = (date?: string) => {

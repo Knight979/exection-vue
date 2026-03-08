@@ -3,7 +3,7 @@ import type { Case, CaseDetail, PageParams, PageResult } from '@/types'
 
 // 获取案件列表
 export function getCaseList(params: PageParams) {
-  return request.get<PageResult<Case>>('/case/list', { params })
+  return request.post<PageResult<Case>>('/case-zx-api/caseInfo/caseInfo/pageListCaseContract', params)
 }
 
 // 获取案件详情

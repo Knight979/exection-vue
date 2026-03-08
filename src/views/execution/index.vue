@@ -375,7 +375,6 @@ const fetchTableData = async () => {
     tableData.value = result.list
     pagination.total = result.total
   } catch (error) {
-    console.error('获取执行案件列表失败:', error)
     ElMessage.error('获取执行案件列表失败')
   } finally {
     loading.value = false
