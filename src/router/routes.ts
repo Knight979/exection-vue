@@ -180,5 +180,145 @@ export const routes: AppRouteRecordRaw[] = [
       title: '404',
       hidden: true
     }
+  },
+  {
+    path: '/user',
+    name: 'User',
+    meta: {
+      title: '用户管理',
+      icon: 'User',
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'UserList',
+        component: () => import('@/views/user/index.vue'),
+        meta: {
+          title: '用户列表',
+          requiresAuth: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/role',
+    name: 'Role',
+    meta: {
+      title: '角色管理',
+      icon: 'Management',
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'RoleList',
+        component: () => import('@/views/role/index.vue'),
+        meta: {
+          title: '角色列表',
+          requiresAuth: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/permission',
+    name: 'Permission',
+    meta: {
+      title: '权限管理',
+      icon: 'Lock',
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'PermissionList',
+        component: () => import('@/views/permission/index.vue'),
+        meta: {
+          title: '权限列表',
+          requiresAuth: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/report',
+    name: 'Report',
+    meta: {
+      title: '报表管理',
+      icon: 'DocumentCopy',
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'ReportList',
+        component: () => import('@/views/report/index.vue'),
+        meta: {
+          title: '报表列表',
+          requiresAuth: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/log',
+    name: 'Log',
+    meta: {
+      title: '操作日志',
+      icon: 'DocumentCopy',
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'LogList',
+        component: () => import('@/views/log/index.vue'),
+        meta: {
+          title: '日志列表',
+          requiresAuth: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/import',
+    name: 'Import',
+    meta: {
+      title: '数据导入',
+      icon: 'DocumentCopy',
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'ImportList',
+        component: () => import('@/views/import/index.vue'),
+        meta: {
+          title: '数据导入',
+          requiresAuth: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/caseAllocation',
+    name: 'CaseAllocation',
+    meta: {
+      title: '案件分配',
+      icon: 'DocumentCopy',
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'CaseAllocationList',
+        component: () => import('@/views/caseAllocation/index.vue'),
+        meta: {
+          title: '案件分配',
+          requiresAuth: true
+        }
+      }
+    ]
   }
 ]
