@@ -434,14 +434,14 @@ const caseDetail = ref<CaseDetail>({} as CaseDetail)
 const fetchCaseDetail = async () => {
   loading.value = true
   try {
-    const caseId = route.params.id as string
+    const caseDetailId = {id:route.params.id as string}
     
     // TODO: 调用API获取数据
-    const res = await getCaseDetail(caseId)
+    const res = await getCaseDetail(caseDetailId)
     console.log(res)
     // Mock数据
     await new Promise(resolve => setTimeout(resolve, 500))
-    caseDetail.value = generateMockDetail(caseId)
+    caseDetail.value = generateMockDetail(caseDetailId)
   } catch (error) {
     ElMessage.error('获取案件详情失败')
   } finally {

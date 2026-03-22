@@ -3,61 +3,24 @@
     <!-- 搜索筛选区 -->
     <el-card class="search-card" shadow="never">
       <el-form :model="searchForm" :inline="true">
-        <el-form-item label="案件编号">
-          <el-input
-            v-model="searchForm.caseNo"
-            placeholder="请输入案件编号"
-            clearable
-            style="width: 200px"
-          />
+        <el-form-item label="姓名">
+          <el-input v-model="searchForm.name" placeholder="请输入案件编号" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="客户姓名">
-          <el-input
-            v-model="searchForm.customerName"
-            placeholder="请输入客户姓名"
-            clearable
-            style="width: 200px"
-          />
+        <!-- <el-form-item label="客户姓名">
+          <el-input v-model="searchForm.customerName" placeholder="请输入客户姓名" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="借款编号">
-          <el-input
-            v-model="searchForm.loanNo"
-            placeholder="请输入借款编号"
-            clearable
-            style="width: 200px"
-          />
+          <el-input v-model="searchForm.loanNo" placeholder="请输入借款编号" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="案件状态">
-          <el-select
-            v-model="searchForm.status"
-            placeholder="请选择状态"
-            clearable
-            style="width: 150px"
-          >
+          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px">
             <el-option label="待分配" value="pending" />
             <el-option label="已分配" value="assigned" />
             <el-option label="进行中" value="in_progress" />
             <el-option label="已结清" value="settled" />
             <el-option label="坏账" value="bad_debt" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="逾期天数">
-          <el-input-number
-            v-model="searchForm.overdueDaysMin"
-            :min="0"
-            placeholder="最小"
-            controls-position="right"
-            style="width: 120px"
-          />
-          <span style="margin: 0 8px">-</span>
-          <el-input-number
-            v-model="searchForm.overdueDaysMax"
-            :min="0"
-            placeholder="最大"
-            controls-position="right"
-            style="width: 120px"
-          />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-button type="primary" :icon="Search" @click="handleSearch">
             搜索
@@ -74,12 +37,7 @@
           <el-button type="primary" :icon="Plus" @click="handleAdd">
             新增案件
           </el-button>
-          <el-button
-            type="success"
-            :icon="Check"
-            :disabled="!selectedRows.length"
-            @click="handleBatchAssign"
-          >
+          <el-button type="success" :icon="Check" :disabled="!selectedRows.length" @click="handleBatchAssign">
             批量分配
           </el-button>
           <el-button type="warning" :icon="Download" @click="handleExport">
@@ -90,116 +48,112 @@
     </el-card>
 
     <!-- 数据表格 -->
+    <!-- 数据表格 -->
     <el-card shadow="never">
-      <el-table
-        v-loading="loading"
-        :data="tableData"
-        stripe
-        border
-        @selection-change="handleSelectionChange"
-      >
+      <el-table v-loading="loading" :data="tableData" stripe border @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column
-          prop="caseNo"
-          label="案件编号"
-          width="150"
-          fixed="left"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="loanNo"
-          label="借款编号"
-          width="180"
-          show-overflow-tooltip
-        />
-        <el-table-column prop="customerName" label="客户姓名" width="120" />
-        <el-table-column prop="customerPhone" label="联系电话" width="130" />
-        <el-table-column prop="productName" label="产品名称" width="150" />
-        <el-table-column
-          prop="loanAmount"
-          label="贷款金额"
-          width="120"
-          align="right"
-        >
+        <el-table-column prop="id" label="编号" width="60" align="center" fixed="left" />
+
+        <!-- 案件基本信息 -->
+        <el-table-column prop="name" label="被申请人" width="100" show-overflow-tooltip />
+        <el-table-column prop="sex" label="性别" width="60" align="center">
+          <template #default="{ row }">
+            {{ row.sex === 1 ? '男' : '女' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="idcard" label="身份证号" width="180" show-overflow-tooltip />
+        <el-table-column prop="phone" label="电话号码" width="130" />
+
+        <!-- 借款信息 -->
+        <el-table-column prop="loanNo" label="借款编号" width="180" show-overflow-tooltip />
+        <el-table-column prop="productName" label="产品名称" width="150" show-overflow-tooltip />
+        <el-table-column prop="loanAmount" label="贷款金额" width="120" align="right">
           <template #default="{ row }">
             {{ formatAmount(row.loanAmount) }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="overdueAmount"
-          label="逾期金额"
-          width="120"
-          align="right"
-        >
+        <el-table-column prop="debtAmount" label="欠款金额" width="120" align="right">
           <template #default="{ row }">
             <span style="color: #f56c6c">
-              {{ formatAmount(row.overdueAmount) }}
+              {{ formatAmount(row.debtAmount) }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="overdueDays"
-          label="逾期天数"
-          width="100"
-          align="center"
-        >
+
+        <!-- 时间信息 -->
+        <el-table-column prop="contractTime" label="合同时间" width="120">
           <template #default="{ row }">
-            <el-tag v-if="row.overdueDays <= 30" type="warning">
-              {{ row.overdueDays }}天
-            </el-tag>
-            <el-tag v-else type="danger">{{ row.overdueDays }}天</el-tag>
+            {{ formatDate(row.contractTime) }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="status"
-          label="案件状态"
-          width="100"
-          align="center"
-        >
+        <el-table-column prop="borrowStartTime" label="借款开始时间" width="120">
           <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)">
-              {{ getStatusText(row.status) }}
+            {{ formatDate(row.borrowStartTime) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="borrowEndTime" label="借款结束时间" width="120">
+          <template #default="{ row }">
+            {{ formatDate(row.borrowEndTime) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="overdueStartTime" label="逾期开始时间" width="120">
+          <template #default="{ row }">
+            {{ formatDate(row.overdueStartTime) }}
+          </template>
+        </el-table-column>
+
+        <!-- 案件状态 -->
+        <el-table-column prop="caseStatus" label="案件状态" width="100" align="center">
+          <template #default="{ row }">
+            <el-tag :type="getCaseStatusType(row.caseStatus)">
+              {{ getCaseStatusText(row.caseStatus) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="assigneeName"
-          label="分配人"
-          width="100"
-          show-overflow-tooltip
-        />
+        <el-table-column prop="casePool" label="类型" width="80" align="center">
+          <template #default="{ row }">
+            <el-tag :type="row.casePool === 0 ? '' : 'success'">
+              {{ row.casePool === 0 ? '仲裁' : '执行' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="instalment" label="分期标记" width="100" align="center">
+          <template #default="{ row }">
+            {{ row.instalment === 1 ? '是' : '否' }}
+          </template>
+        </el-table-column>
+
+        <!-- 委案信息 -->
+        <el-table-column prop="agentStartTime" label="委案开始时间" width="120">
+          <template #default="{ row }">
+            {{ formatDate(row.agentStartTime) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="agentEndTime" label="委案结束时间" width="120">
+          <template #default="{ row }">
+            {{ formatDate(row.agentEndTime) }}
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="updateTime" label="修改时间" width="160">
+          <template #default="{ row }">
+            {{ formatDateTime(row.updateTime) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
+
         <el-table-column label="操作" width="240" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button
-              type="primary"
-              link
-              :icon="View"
-              @click="handleView(row)"
-            >
+            <el-button type="primary" link :icon="View" @click="handleView(row)">
               查看
             </el-button>
-            <el-button
-              type="warning"
-              link
-              :icon="Edit"
-              @click="handleEdit(row)"
-            >
+            <el-button type="warning" link :icon="Edit" @click="handleEdit(row)">
               编辑
             </el-button>
-            <el-button
-              type="success"
-              link
-              :icon="User"
-              @click="handleAssign(row)"
-            >
+            <el-button type="success" link :icon="User" @click="handleAssign(row)">
               分配
             </el-button>
-            <el-button
-              type="info"
-              link
-              :icon="Phone"
-              @click="handleContact(row)"
-            >
+            <el-button type="info" link :icon="Phone" @click="handleContact(row)">
               触达
             </el-button>
           </template>
@@ -208,17 +162,12 @@
 
       <!-- 分页 -->
       <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="pagination.pageNum"
-          v-model:page-size="pagination.pageSize"
-          :total="pagination.total"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <el-pagination v-model:current-page="pagination.currPage" v-model:page-size="pagination.pageSize"
+          :total="pagination.total" :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange" @current-change="handleCurrentChange" />
       </div>
     </el-card>
+
   </div>
 </template>
 
@@ -243,12 +192,9 @@ const router = useRouter();
 
 // 搜索表单
 const searchForm = reactive({
-  caseNo: "",
-  customerName: "",
-  loanNo: "",
-  status: "",
-  overdueDaysMin: undefined as number | undefined,
-  overdueDaysMax: undefined as number | undefined,
+  name: "",
+  userGroupId: "",
+  sex: "",
 });
 
 // 表格数据
@@ -258,10 +204,10 @@ const selectedRows = ref<Case[]>([]);
 
 // 分页
 const pagination = reactive({
-  pageNum: 1,
+  currPage: 1,
   pageSize: 20,
-  total: 0,
-});
+  total: 0
+})
 
 // 获取表格数据
 const fetchTableData = async () => {
@@ -272,7 +218,6 @@ const fetchTableData = async () => {
       ...searchForm,
       ...pagination,
     });
-    // Mock数据
     await new Promise(resolve => setTimeout(resolve, 500))
     tableData.value = res.list;
     pagination.total = res.total;
@@ -294,37 +239,6 @@ const fetchTableData = async () => {
 //   };
 //   return statusMap[status] || "pending";
 // };
-// 生成Mock数据
-// const generateMockData = (): Case[] => {
-//   const statuses = [
-//     "pending",
-//     "assigned",
-//     "in_progress",
-//     "settled",
-//     "bad_debt",
-//   ];
-//   const products = ["极速贷", "信用贷", "车贷通", "房贷宝"];
-
-//   return Array.from({ length: pagination.pageSize }, (_, i) => ({
-//     id: String(pagination.pageNum * pagination.pageSize + i),
-//     dataId: String(1000 + i),
-//     caseNo: `CASE${String(pagination.pageNum * pagination.pageSize + i + 1).padStart(6, "0")}`,
-//     productId: i % 4,
-//     productName: products[i % 4],
-//     loanNo: `LOAN${String(10000 + i).padStart(8, "0")}`,
-//     customerName: `客户${i + 1}`,
-//     customerPhone: `138${String(10000000 + i).slice(0, 8)}`,
-//     customerIdCard: `42010119900101${String(1000 + i).slice(0, 4)}`,
-//     loanAmount: 10000 + i * 1000,
-//     overdueAmount: 1000 + i * 100,
-//     overdueDays: 10 + ((i * 5) % 90),
-//     status: statuses[i % 5] as any,
-//     assigneeId: i % 3 === 0 ? String(i % 5) : undefined,
-//     assigneeName: i % 3 === 0 ? `催收员${(i % 5) + 1}` : undefined,
-//     createTime: new Date().toISOString(),
-//     updateTime: new Date().toISOString(),
-//   }));
-// };
 
 // 格式化金额
 const formatAmount = (amount: number) => {
@@ -335,44 +249,41 @@ const formatAmount = (amount: number) => {
 };
 
 // 获取状态类型
-const getStatusType = (status: string) => {
-  const typeMap: Record<string, any> = {
-    pending: "info",
-    assigned: "",
-    in_progress: "primary",
-    settled: "success",
-    bad_debt: "danger",
-  };
-  return typeMap[status] || "";
-};
+// const getStatusType = (status: string) => {
+//   const typeMap: Record<string, any> = {
+//     pending: "info",
+//     assigned: "",
+//     in_progress: "primary",
+//     settled: "success",
+//     bad_debt: "danger",
+//   };
+//   return typeMap[status] || "";
+// };
 
-// 获取状态文本
-const getStatusText = (status: string) => {
-  const textMap: Record<string, string> = {
-    pending: "待分配",
-    assigned: "已分配",
-    in_progress: "进行中",
-    settled: "已结清",
-    bad_debt: "坏账",
-  };
-  return textMap[status] || status;
-};
+// // 获取状态文本
+// const getStatusText = (status: string) => {
+//   const textMap: Record<string, string> = {
+//     pending: "待分配",
+//     assigned: "已分配",
+//     in_progress: "进行中",
+//     settled: "已结清",
+//     bad_debt: "坏账",
+//   };
+//   return textMap[status] || status;
+// };
 
 // 搜索
 const handleSearch = () => {
-  pagination.pageNum = 1;
+  pagination.currPage = 1;
   fetchTableData();
 };
 
 // 重置
 const handleReset = () => {
   Object.assign(searchForm, {
-    caseNo: "",
     customerName: "",
     loanNo: "",
     status: "",
-    overdueDaysMin: undefined,
-    overdueDaysMax: undefined,
   });
   handleSearch();
 };
@@ -436,7 +347,7 @@ const handleSizeChange = (size: number) => {
 
 // 当前页变化
 const handleCurrentChange = (page: number) => {
-  pagination.pageNum = page;
+  pagination.currPage = page;
   fetchTableData();
 };
 
