@@ -2,7 +2,7 @@
   <div class="case-detail-container">
     <el-page-header :icon="ArrowLeft" title="返回" @back="handleBack">
       <template #content>
-        <span class="page-title">案件详情 - {{ caseDetail.name }}</span>
+        <span class="page-title">案件详情</span>
       </template>
       <template #extra>
         <el-button type="primary" :icon="Plus" @click="handleAddContact">
@@ -23,64 +23,60 @@
         <el-tab-pane label="基本信息" name="basic">
           <el-descriptions :column="3" border>
             <el-descriptions-item label="案件编号">
-              {{ caseDetail.id }}
+              {{ caseDetail.caseNo }}
             </el-descriptions-item>
             <el-descriptions-item label="数据ID">
               {{ caseDetail.dataId }}
             </el-descriptions-item>
-            <el-descriptions-item label="被申请人姓名">
-              {{ caseDetail.name }}
+            <el-descriptions-item label="借款编号">
+              {{ caseDetail.loanNo }}
             </el-descriptions-item>
-            <el-descriptions-item label="性别">
-              <el-tag :type="caseDetail.sex === 1 ? '' : 'danger'" size="small">
-                {{ caseDetail.sex === 1 ? '男' : '女' }}
-              </el-tag>
+            <el-descriptions-item label="产品名称">
+              {{ caseDetail.productName }}
             </el-descriptions-item>
-            <el-descriptions-item label="身份证号">
-              {{ caseDetail.idcard }}
+            <el-descriptions-item label="客户姓名">
+              {{ caseDetail.customerName }}
             </el-descriptions-item>
             <el-descriptions-item label="联系电话">
-              {{ caseDetail.phone }}
+              {{ caseDetail.customerPhone }}
+            </el-descriptions-item>
+            <el-descriptions-item label="身份证号">
+              {{ caseDetail.customerIdCard }}
+            </el-descriptions-item>
+            <el-descriptions-item label="贷款金额">
+              <span style="color: #409eff; font-weight: bold">
+                {{ formatAmount(caseDetail.loanAmount) }}
+              </span>
+            </el-descriptions-item>
+            <el-descriptions-item label="逾期金额">
+              <span style="color: #f56c6c; font-weight: bold">
+                {{ formatAmount(caseDetail.overdueAmount) }}
+              </span>
+            </el-descriptions-item>
+            <el-descriptions-item label="逾期天数">
+              <el-tag
+                :type="caseDetail.overdueDays > 30 ? 'danger' : 'warning'"
+                size="large"
+              >
+                {{ caseDetail.overdueDays }}天
+              </el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="案件状态">
-              <el-tag :type="getCaseStatusType(caseDetail.caseStatus)" size="large">
-                {{ getCaseStatusText(caseDetail.caseStatus) }}
+              <el-tag :type="getStatusType(caseDetail.status)" size="large">
+                {{ getStatusText(caseDetail.status) }}
               </el-tag>
             </el-descriptions-item>
-            <el-descriptions-item label="处置类型">
-              <el-tag :type="caseDetail.casePool === 0 ? 'warning' : 'success'" effect="plain">
-                {{ caseDetail.casePool === 0 ? '仲裁' : '执行' }}
-              </el-tag>
+            <el-descriptions-item label="分配人">
+              {{ caseDetail.assigneeName || '未分配' }}
             </el-descriptions-item>
-            <el-descriptions-item label="分期标记">
-              {{ caseDetail.instalment === 1 ? '是' : '否' }}
+            <el-descriptions-item label="仲裁案号">
+              {{ caseDetail.acCaseNo || '-' }}
             </el-descriptions-item>
-            <el-descriptions-item label="债务总额">
-              <span class="amount-text">{{ formatAmount(caseDetail.debtTotal) }}</span>
+            <el-descriptions-item label="中院执行案号">
+              {{ caseDetail.middleCaseNo || '-' }}
             </el-descriptions-item>
-            <el-descriptions-item label="逾期开始时间">
-              {{ formatDate(caseDetail.overdueStartTime) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="代理开始日期">
-              {{ formatDate(caseDetail.agentStartTime) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="代理截止日期">
-              {{ formatDate(caseDetail.agentEndTime) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="申请人ID">
-              {{ caseDetail.applicantId }}
-            </el-descriptions-item>
-            <el-descriptions-item label="产品ID">
-              {{ caseDetail.productId }}
-            </el-descriptions-item>
-            <el-descriptions-item label="公司ID">
-              {{ caseDetail.orgId }}
-            </el-descriptions-item>
-            <el-descriptions-item label="催收组ID">
-              {{ caseDetail.userGroupId }}
-            </el-descriptions-item>
-            <el-descriptions-item label="用户ID">
-              {{ caseDetail.userId }}
+            <el-descriptions-item label="基层执行案号">
+              {{ caseDetail.basicCaseNo || '-' }}
             </el-descriptions-item>
             <el-descriptions-item label="创建时间">
               {{ formatDate(caseDetail.createTime) }}
@@ -88,71 +84,69 @@
             <el-descriptions-item label="更新时间">
               {{ formatDate(caseDetail.updateTime) }}
             </el-descriptions-item>
-            <el-descriptions-item label="备注" :span="3">
-              {{ caseDetail.remark || '-' }}
-            </el-descriptions-item>
           </el-descriptions>
         </el-tab-pane>
 
-        <!-- 借款信息 -->
-        <el-tab-pane label="借款信息" name="loan">
-          <el-descriptions :column="3" border>
-            <el-descriptions-item label="借据号">
-              {{ caseDetail.loanNo }}
-            </el-descriptions-item>
-            <el-descriptions-item label="逾期日期">
-              {{ formatDate(caseDetail.overDate) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="欠款金额">
-              {{ formatAmount(caseDetail.debtAmount) }}
+        <!-- 借款合同 -->
+        <el-tab-pane label="借款合同" name="contract">
+          <el-descriptions v-if="caseDetail.loanContract" :column="3" border>
+            <el-descriptions-item label="借款编号">
+              {{ caseDetail.loanContract.loanNo }}
             </el-descriptions-item>
             <el-descriptions-item label="借款金额">
-              {{ formatAmount(caseDetail.loanAmount) }}
+              {{ formatAmount(caseDetail.loanContract.debtAmount) }}
             </el-descriptions-item>
-            <el-descriptions-item label="期数">
-              {{ caseDetail.period }}
+            <el-descriptions-item label="放款金额">
+              {{ formatAmount(caseDetail.loanContract.loanAmount || 0) }}
             </el-descriptions-item>
-            <el-descriptions-item label="合同时间">
-              {{ formatDate(caseDetail.contractTime) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="借款开始时间">
-              {{ formatDate(caseDetail.borrowStartTime) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="借款结束时间">
-              {{ formatDate(caseDetail.borrowEndTime) }}
+            <el-descriptions-item label="借款期限">
+              {{ caseDetail.loanContract.period }}个月
             </el-descriptions-item>
             <el-descriptions-item label="年利率">
-              {{ caseDetail.yearRate }}%
+              {{ caseDetail.loanContract.yearRate }}%
             </el-descriptions-item>
             <el-descriptions-item label="月利率">
-              {{ caseDetail.monthRate }}%
+              {{ caseDetail.loanContract.monthRate }}%
             </el-descriptions-item>
-            <el-descriptions-item label="实际借款时间">
-              {{ formatDate(caseDetail.actualBorrowTime) }}
+            <el-descriptions-item label="合同签订时间">
+              {{ formatDate(caseDetail.loanContract.contractTime) }}
             </el-descriptions-item>
-            <el-descriptions-item label="总利息金额">
-              {{ formatAmount(caseDetail.totalInterestAmount) }}
+            <el-descriptions-item label="借款开始时间">
+              {{ formatDate(caseDetail.loanContract.borrowStartTime) }}
             </el-descriptions-item>
-            <el-descriptions-item label="已还金额">
-              {{ formatAmount(caseDetail.repaymentAmount) }}
+            <el-descriptions-item label="借款结束时间">
+              {{ formatDate(caseDetail.loanContract.borrowEndTime) }}
             </el-descriptions-item>
-            <el-descriptions-item label="已还利息">
-              {{ formatAmount(caseDetail.repaymentInterest) }}
+            <el-descriptions-item label="实际到账时间">
+              {{ formatDate(caseDetail.loanContract.actualBorrowTime) }}
             </el-descriptions-item>
-            <el-descriptions-item label="利息金额">
-              {{ formatAmount(caseDetail.interestAmount) }}
+            <el-descriptions-item label="还款本息">
+              {{ formatAmount(caseDetail.loanContract.totalInterestAmount) }}
+            </el-descriptions-item>
+            <el-descriptions-item label="还款本金">
+              {{ formatAmount(caseDetail.loanContract.repaymentAmount || 0) }}
+            </el-descriptions-item>
+            <el-descriptions-item label="还款利息">
+              {{ formatAmount(caseDetail.loanContract.repaymentInterest || 0) }}
+            </el-descriptions-item>
+            <el-descriptions-item label="尚欠本金">
+              {{ formatAmount(caseDetail.loanContract.borrowAmount || 0) }}
+            </el-descriptions-item>
+            <el-descriptions-item label="尚欠利息">
+              {{ formatAmount(caseDetail.loanContract.interestAmount || 0) }}
             </el-descriptions-item>
             <el-descriptions-item label="借款用途" :span="3">
-              {{ caseDetail.borrowPurpose || '-' }}
+              {{ caseDetail.loanContract.borrowPurpose || '-' }}
             </el-descriptions-item>
             <el-descriptions-item label="还款方式" :span="3">
-              {{ caseDetail.repayWay || '-' }}
+              {{ caseDetail.loanContract.repayWay || '-' }}
             </el-descriptions-item>
           </el-descriptions>
+          <el-empty v-else description="暂无借款合同信息" />
         </el-tab-pane>
 
-        <!-- 债务人详情 -->
-        <el-tab-pane label="债务人详情" name="respondent">
+        <!-- 债务人信息 -->
+        <el-tab-pane label="债务人信息" name="respondent">
           <el-descriptions v-if="caseDetail.respondent" :column="3" border>
             <el-descriptions-item label="姓名">
               {{ caseDetail.respondent.name }}
@@ -188,13 +182,18 @@
               {{ caseDetail.respondent.workAddr }}
             </el-descriptions-item>
           </el-descriptions>
-          <el-empty v-else description="暂无债务人详细信息" />
+          <el-empty v-else description="暂无债务人信息" />
         </el-tab-pane>
 
         <!-- 仲裁信息 -->
         <el-tab-pane label="仲裁信息" name="arbitration">
           <div v-if="caseDetail.arbitrationInfo">
-            <el-button type="primary" :icon="Edit" style="margin-bottom: 16px" @click="handleEditArbitration">
+            <el-button
+              type="primary"
+              :icon="Edit"
+              style="margin-bottom: 16px"
+              @click="handleEditArbitration"
+            >
               编辑仲裁信息
             </el-button>
             <el-descriptions :column="3" border>
@@ -234,16 +233,19 @@
               <el-descriptions-item label="开庭日期">
                 {{ formatDate(caseDetail.arbitrationInfo.openCourtDay) }}
               </el-descriptions-item>
-              <el-descriptions-item label="结案日期">
+              <el-descriptions-item label="撤案日期">
                 {{ formatDate(caseDetail.arbitrationInfo.closeDay) }}
               </el-descriptions-item>
-              <el-descriptions-item label="裁决日期">
+              <el-descriptions-item label="仲裁裁决日期">
                 {{ formatDate(caseDetail.arbitrationInfo.judgeDate) }}
               </el-descriptions-item>
-              <el-descriptions-item label="仲裁状态">
+              <el-descriptions-item label="仲裁状态" :span="2">
                 <el-tag :type="getArbitrationStatusType(caseDetail.arbitrationInfo.acStatus)">
                   {{ getArbitrationStatusText(caseDetail.arbitrationInfo.acStatus) }}
                 </el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="备注" :span="3">
+                {{ caseDetail.arbitrationInfo.remark || '-' }}
               </el-descriptions-item>
             </el-descriptions>
           </div>
@@ -253,66 +255,83 @@
         <!-- 执行信息 -->
         <el-tab-pane label="执行信息" name="execution">
           <div v-if="caseDetail.executionInfo">
-            <el-button type="primary" :icon="Edit" style="margin-bottom: 16px" @click="handleEditExecution">
+            <el-button
+              type="primary"
+              :icon="Edit"
+              style="margin-bottom: 16px"
+              @click="handleEditExecution"
+            >
               编辑执行信息
             </el-button>
             <el-descriptions :column="3" border>
               <el-descriptions-item label="中院执行案号">
                 {{ caseDetail.executionInfo.middleCaseNo || '-' }}
               </el-descriptions-item>
-              <el-descriptions-item label="基层执行案号">
+              <el-descriptions-item label="基层执行案号" :span="2">
                 {{ caseDetail.executionInfo.basicCaseNo || '-' }}
               </el-descriptions-item>
-              <el-descriptions-item label="是否基层执行">
-                {{ caseDetail.executionInfo.basicFlag ? '是' : '否' }}
+              <el-descriptions-item label="执行标识">
+                {{ caseDetail.executionInfo.basicFlag ? '基层执行' : '中院执行' }}
               </el-descriptions-item>
               <el-descriptions-item label="中院受理日期">
                 {{ formatDate(caseDetail.executionInfo.middleAcceptDay) }}
               </el-descriptions-item>
-              <el-descriptions-item label="基院受理日期">
+              <el-descriptions-item label="基层立案时间">
                 {{ formatDate(caseDetail.executionInfo.basicAcceptDay) }}
               </el-descriptions-item>
-              <el-descriptions-item label="案件阶段">
-                {{ caseDetail.executionInfo.caseStep || '-' }}
+              <el-descriptions-item label="案件当前阶段">
+                {{ caseDetail.executionInfo.caseStep }}
               </el-descriptions-item>
-              <el-descriptions-item label="案件状态">
-                {{ caseDetail.executionInfo.caseStatus || '-' }}
+              <el-descriptions-item label="当前案件状态" :span="2">
+                {{ caseDetail.executionInfo.caseStatus }}
               </el-descriptions-item>
               <el-descriptions-item label="中级法院">
-                {{ caseDetail.executionInfo.middleCourt || '-' }}
+                {{ caseDetail.executionInfo.middleCourt }}
               </el-descriptions-item>
-              <el-descriptions-item label="基层法院">
-                {{ caseDetail.executionInfo.basicCourt || '-' }}
+              <el-descriptions-item label="基础法院" :span="2">
+                {{ caseDetail.executionInfo.basicCourt }}
               </el-descriptions-item>
               <el-descriptions-item label="省份">
-                {{ caseDetail.executionInfo.province || '-' }}
+                {{ caseDetail.executionInfo.province }}
               </el-descriptions-item>
-              <el-descriptions-item label="城市">
-                {{ caseDetail.executionInfo.city || '-' }}
+              <el-descriptions-item label="市">
+                {{ caseDetail.executionInfo.city }}
               </el-descriptions-item>
-              <el-descriptions-item label="区县">
-                {{ caseDetail.executionInfo.area || '-' }}
+              <el-descriptions-item label="县地区">
+                {{ caseDetail.executionInfo.area }}
               </el-descriptions-item>
               <el-descriptions-item label="利息罚息">
-                {{ formatAmount(caseDetail.executionInfo.penaltyInterest || 0) }}
+                {{ formatAmount(caseDetail.executionInfo.penaltyInterest) }}
               </el-descriptions-item>
               <el-descriptions-item label="迟延履行金">
-                {{ formatAmount(caseDetail.executionInfo.delayInterest || 0) }}
+                {{ formatAmount(caseDetail.executionInfo.delayInterest) }}
               </el-descriptions-item>
               <el-descriptions-item label="申请执行利率">
-                {{ caseDetail.executionInfo.carryoutInterest || 0 }}%
+                {{ caseDetail.executionInfo.carryoutInterest }}%
               </el-descriptions-item>
-              <el-descriptions-item label="中院立案法官">
-                {{ caseDetail.executionInfo.middleUpJudge || '-' }} ({{ caseDetail.executionInfo.middleUpPhone || '-' }})
+              <el-descriptions-item label="中院立案庭法官">
+                {{ caseDetail.executionInfo.middleUpJudge || '-' }}
               </el-descriptions-item>
-              <el-descriptions-item label="中院执行法官">
-                {{ caseDetail.executionInfo.middleExJudge || '-' }} ({{ caseDetail.executionInfo.middleExPhone || '-' }})
+              <el-descriptions-item label="中院立案庭电话" :span="2">
+                {{ caseDetail.executionInfo.middleUpPhone || '-' }}
               </el-descriptions-item>
-              <el-descriptions-item label="基院立案法官">
-                {{ caseDetail.executionInfo.basicUpJudge || '-' }} ({{ caseDetail.executionInfo.basicUpPhone || '-' }})
+              <el-descriptions-item label="中院执行庭法官">
+                {{ caseDetail.executionInfo.middleExJudge || '-' }}
               </el-descriptions-item>
-              <el-descriptions-item label="基院执行法官">
-                {{ caseDetail.executionInfo.basicExJudge || '-' }} ({{ caseDetail.executionInfo.basicExPhone || '-' }})
+              <el-descriptions-item label="中院执行庭电话" :span="2">
+                {{ caseDetail.executionInfo.middleExPhone || '-' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="基院立案庭法官">
+                {{ caseDetail.executionInfo.basicUpJudge || '-' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="基院立案庭电话" :span="2">
+                {{ caseDetail.executionInfo.basicUpPhone || '-' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="基院执行庭法官">
+                {{ caseDetail.executionInfo.basicExJudge || '-' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="基院执行庭电话" :span="2">
+                {{ caseDetail.executionInfo.basicExPhone || '-' }}
               </el-descriptions-item>
             </el-descriptions>
           </div>
@@ -321,38 +340,68 @@
 
         <!-- 触达记录 -->
         <el-tab-pane label="触达记录" name="contact">
-          <el-timeline v-if="caseDetail.contactRecords && caseDetail.contactRecords.length">
-            <el-timeline-item v-for="record in caseDetail.contactRecords" :key="record.id"
-              :timestamp="formatDate(record.contactTime)" placement="top">
-              <el-card shadow="hover">
-                <div class="contact-record-header">
-                  <el-tag :type="getContactTypeTag(record.contactType)">
-                    {{ getContactTypeText(record.contactType) }}
-                  </el-tag>
-                  <el-tag :type="getCallStatusTag(record.callStatus)" style="margin-left: 8px">
-                    {{ getCallStatusText(record.callStatus) }}
-                  </el-tag>
-                  <el-tag :type="getRepayWishTag(record.repayWish)" style="margin-left: 8px">
-                    {{ getRepayWishText(record.repayWish) }}
-                  </el-tag>
-                </div>
-                <el-descriptions :column="2" style="margin-top: 12px">
+          <el-button
+            type="primary"
+            :icon="Plus"
+            style="margin-bottom: 16px"
+            @click="handleAddContact"
+          >
+            添加触达记录
+          </el-button>
+          <el-timeline v-if="caseDetail.contactRecords?.length">
+            <el-timeline-item
+              v-for="record in caseDetail.contactRecords"
+              :key="record.id"
+              :timestamp="formatDate(record.contactTime)"
+              placement="top"
+            >
+              <el-card>
+                <el-descriptions :column="2" size="small">
+                  <el-descriptions-item label="触达方式">
+                    <el-tag :type="getContactTypeTag(record.contactType)">
+                      {{ getContactTypeText(record.contactType) }}
+                    </el-tag>
+                  </el-descriptions-item>
                   <el-descriptions-item label="触达对象">
-                    {{ record.contactTargetName }} ({{ record.contactTargetType }})
+                    {{ record.contactTargetName }}
+                    ({{ record.contactTargetType }})
                   </el-descriptions-item>
                   <el-descriptions-item label="联系电话">
                     {{ record.contactTargetPhone }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="触达详情" :span="2">
-                    {{ record.contactTargetDetail || '-' }}
+                  <el-descriptions-item label="通话状态">
+                    <el-tag :type="getCallStatusTag(record.callStatus)">
+                      {{ getCallStatusText(record.callStatus) }}
+                    </el-tag>
                   </el-descriptions-item>
-                  <el-descriptions-item v-if="record.ptpMoney" label="承诺还款金额">
+                  <el-descriptions-item label="还款意愿" :span="2">
+                    <el-tag :type="getRepayWishTag(record.repayWish)">
+                      {{ getRepayWishText(record.repayWish) }}
+                    </el-tag>
+                  </el-descriptions-item>
+                  <el-descriptions-item
+                    v-if="record.ptpMoney"
+                    label="PTP金额"
+                  >
                     {{ formatAmount(record.ptpMoney) }}
                   </el-descriptions-item>
-                  <el-descriptions-item v-if="record.ptpTime" label="承诺还款时间">
-                    {{ record.ptpTime }}
+                  <el-descriptions-item
+                    v-if="record.ptpTime"
+                    label="PTP时间"
+                  >
+                    {{ formatDate(record.ptpTime) }}
                   </el-descriptions-item>
-                  <el-descriptions-item v-if="record.nextContactTime" label="下次跟进时间">
+                  <el-descriptions-item label="下次跟进">
+                    {{
+                      record.nextContactType === 1
+                        ? '需跟进'
+                        : '无需跟进'
+                    }}
+                  </el-descriptions-item>
+                  <el-descriptions-item
+                    v-if="record.nextContactTime"
+                    label="下次跟进时间"
+                  >
                     {{ formatDate(record.nextContactTime) }}
                   </el-descriptions-item>
                 </el-descriptions>
@@ -372,9 +421,8 @@ import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft, Plus, User, Edit } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import type { CaseDetail } from '@/types/case'
+import dayjs from 'dayjs'
 import { getCaseDetail } from '@/api/case'
-import { formatDate, formatAmount } from '@/utils/format'
-
 const router = useRouter()
 const route = useRoute()
 
@@ -386,17 +434,14 @@ const caseDetail = ref<CaseDetail>({} as CaseDetail)
 const fetchCaseDetail = async () => {
   loading.value = true
   try {
-    const id = route.params.id as string
-    const res = await getCaseDetail({ id })
-    // 模拟网络延迟
-    await new Promise(resolve => setTimeout(resolve, 300))
+    const caseDetailId = {id:route.params.id as string}
     
-    // 如果 API 返回了数据则使用，否则使用 Mock 数据（保持原逻辑）
-    if (res && res.id) {
-      caseDetail.value = res
-    } else {
-      caseDetail.value = generateMockDetail(id)
-    }
+    // TODO: 调用API获取数据
+    const res = await getCaseDetail(caseDetailId)
+    console.log(res)
+    // Mock数据
+    await new Promise(resolve => setTimeout(resolve, 500))
+    caseDetail.value = generateMockDetail(caseDetailId)
   } catch (error) {
     ElMessage.error('获取案件详情失败')
   } finally {
@@ -408,48 +453,50 @@ const fetchCaseDetail = async () => {
 const generateMockDetail = (id: string): CaseDetail => {
   return {
     id,
-    dataId: 1001,
-    name: '张三',
-    sex: 1,
-    idcard: '420101199001011234',
-    phone: '13800138001',
-    applicantId: 1,
-    respondentId: 1,
+    dataId: '1001',
+    caseNo: 'CASE000001',
     productId: 1,
-    orgId: 1,
-    userGroupId: 1,
-    userId: 1,
-    caseStatus: 4,
-    debtTotal: 55000,
-    overdueStartTime: '2024-01-01',
-    agentStartTime: '2024-01-05',
-    agentEndTime: '2024-12-31',
-    casePool: 0,
-    instalment: 1,
-    remark: '这是一个Mock案件备注',
-    createTime: '2024-01-01T10:00:00Z',
-    updateTime: '2024-03-22T15:30:00Z',
-    
-    // 借款信息
-    loanNo: 'LOAN20240001',
-    overDate: '2024-01-01',
-    debtAmount: 50000,
-    loanAmount: 48000,
-    period: 12,
-    contractTime: '2023-01-01',
-    borrowStartTime: '2023-01-01',
-    borrowEndTime: '2024-01-01',
-    yearRate: 12.5,
-    monthRate: 1.04,
-    actualBorrowTime: '2023-01-02',
-    totalInterestAmount: 5000,
-    repaymentAmount: 45000,
-    repaymentInterest: 3000,
-    borrowAmount: 5000,
-    interestAmount: 2000,
-    borrowPurpose: '个人消费',
-    repayWay: '等额本息',
-
+    productName: '极速贷',
+    loanNo: 'LOAN00010001',
+    customerName: '张三',
+    customerPhone: '13800138001',
+    customerIdCard: '420101199001011234',
+    loanAmount: 50000,
+    overdueAmount: 5000,
+    overdueDays: 45,
+    status: 'in_progress' as any,
+    assigneeId: '1',
+    assigneeName: '催收员1',
+    acCaseNo: 'ZC2024001',
+    middleCaseNo: 'ZY2024001',
+    basicCaseNo: 'JC2024001',
+    createTime: '2024-01-01T00:00:00.000Z',
+    updateTime: '2024-01-15T00:00:00.000Z',
+    loanContract: {
+      id: 1,
+      dataId: 1001,
+      loanNo: 'LOAN00010001',
+      productId: 1,
+      overDate: '2024-01-01',
+      debtAmount: 50000,
+      loanAmount: 48000,
+      period: 12,
+      contractTime: '2023-01-01',
+      borrowStartTime: '2023-01-01',
+      borrowEndTime: '2024-01-01',
+      yearRate: 12.0,
+      monthRate: 1.0,
+      actualBorrowTime: '2023-01-02',
+      totalInterestAmount: 56000,
+      repaymentAmount: 45000,
+      repaymentInterest: 3000,
+      borrowAmount: 5000,
+      interestAmount: 2000,
+      borrowPurpose: '个人消费',
+      repayWay: '等额本息',
+      updateTime: '2024-01-15T00:00:00.000Z',
+      createTime: '2023-01-01T00:00:00.000Z'
+    },
     respondent: {
       id: 1,
       dataId: 1001,
@@ -532,7 +579,7 @@ const generateMockDetail = (id: string): CaseDetail => {
         contactTargetName: '张三',
         contactTargetPhone: '13800138001',
         contactTargetAddress: '湖北省武汉市',
-        contactTargetDetail: '本人接听，承诺还款',
+        contactTargetDetail: '本人接听',
         callStatus: 1,
         repayWish: 11,
         ptpMoney: 5000,
@@ -550,35 +597,43 @@ const generateMockDetail = (id: string): CaseDetail => {
   }
 }
 
-// 获取案件状态文本
-const getCaseStatusText = (status: number) => {
-  const statusMap: Record<number, string> = {
-    1: "待平台分案",
-    3: "待分配坐席",
-    4: "再催",
-    6: "停催",
-    10: "结清",
-    12: "已删除",
-    13: "在催-普通留案",
-    14: "在催-特殊留案"
-  };
-  return statusMap[status] || `未知状态(${status})`;
-};
+// 格式化金额
+const formatAmount = (amount: number | undefined | null) => {
+  if (amount === undefined || amount === null) {
+    return '¥0.00'
+  }
+  return `¥${amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`
+}
 
-// 获取案件状态标签类型
-const getCaseStatusType = (status: number) => {
-  const typeMap: Record<number, string> = {
-    1: "info",
-    3: "warning",
-    4: "primary",
-    6: "danger",
-    10: "success",
-    12: "info",
-    13: "",
-    14: "warning"
-  };
-  return typeMap[status] || "";
-};
+
+// 格式化日期
+const formatDate = (date?: string) => {
+  return date ? dayjs(date).format('YYYY-MM-DD HH:mm:ss') : '-'
+}
+
+// 获取状态类型
+const getStatusType = (status: string) => {
+  const typeMap: Record<string, any> = {
+    pending: 'info',
+    assigned: '',
+    in_progress: 'primary',
+    settled: 'success',
+    bad_debt: 'danger'
+  }
+  return typeMap[status] || ''
+}
+
+// 获取状态文本
+const getStatusText = (status: string) => {
+  const textMap: Record<string, string> = {
+    pending: '待分配',
+    assigned: '已分配',
+    in_progress: '进行中',
+    settled: '已结清',
+    bad_debt: '坏账'
+  }
+  return textMap[status] || status
+}
 
 // 获取仲裁状态类型
 const getArbitrationStatusType = (status?: number) => {
@@ -719,17 +774,6 @@ onMounted(() => {
   .page-title {
     font-size: 18px;
     font-weight: 600;
-  }
-
-  .amount-text {
-    font-family: Monaco, Consolas, monospace;
-    font-weight: bold;
-    color: #f56c6c;
-  }
-
-  .contact-record-header {
-    display: flex;
-    align-items: center;
   }
 
   :deep(.el-timeline-item__timestamp) {

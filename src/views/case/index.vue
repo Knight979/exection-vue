@@ -54,32 +54,21 @@
     <el-card shadow="never">
       <el-table v-loading="loading" :data="tableData" stripe border @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="id" label="编号" width="80" align="center" fixed="left" />
-        <el-table-column prop="dataId" label="数据ID" width="80" align="center" />
-        <el-table-column prop="name" label="名字" width="100" show-overflow-tooltip />
-        <el-table-column prop="sex" label="性别" width="70" align="center">
-          <template #default="{ row }">
-            <el-tag :type="row.sex === 1 ? '' : 'danger'" size="small">
-              {{ row.sex === 1 ? '男' : '女' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="idcard" label="身份证号" width="180" show-overflow-tooltip />
-        <el-table-column prop="phone" label="电话" width="130" />
         
-        <el-table-column prop="caseStatus" label="案件状态" width="150" align="center">
+        <!-- 按照注释字段顺序渲染 -->
+        <el-table-column prop="agentEndTime" label="代理截止日期" width="160" show-overflow-tooltip>
           <template #default="{ row }">
-            <el-tag :type="getCaseStatusType(row.caseStatus)">
-              {{ getCaseStatusText(row.caseStatus) }}
-            </el-tag>
+            {{ formatDate(row.agentEndTime) }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="debtTotal" label="债务总额" width="120" align="right">
+        <el-table-column prop="agentStartTime" label="代理开始日期" width="160" show-overflow-tooltip>
           <template #default="{ row }">
-            <span class="amount-text">{{ formatAmount(row.debtTotal) }}</span>
+            {{ formatDate(row.agentStartTime) }}
           </template>
         </el-table-column>
+
+        <el-table-column prop="applicantId" label="申请人ID" width="100" align="center" />
 
         <el-table-column prop="casePool" label="处置类型" width="100" align="center">
           <template #default="{ row }">
@@ -89,6 +78,32 @@
           </template>
         </el-table-column>
 
+        <el-table-column prop="caseStatus" label="案件状态" width="150" align="center">
+          <template #default="{ row }">
+            <el-tag :type="getCaseStatusType(row.caseStatus)">
+              {{ getCaseStatusText(row.caseStatus) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="createTime" label="创建时间" width="160" show-overflow-tooltip>
+          <template #default="{ row }">
+            {{ formatDate(row.createTime) }}
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="dataId" label="数据ID" width="100" align="center" />
+
+        <el-table-column prop="debtTotal" label="债务总额" width="120" align="right">
+          <template #default="{ row }">
+            <span class="amount-text">{{ formatAmount(row.debtTotal) }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="id" label="编号" width="100" align="center" fixed="left" />
+
+        <el-table-column prop="idcard" label="身份证号" width="180" show-overflow-tooltip />
+
         <el-table-column prop="instalment" label="分期标记" width="90" align="center">
           <template #default="{ row }">
             <el-tag :type="row.instalment === 1 ? 'success' : 'info'" size="small">
@@ -97,44 +112,41 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="overdueStartTime" label="逾期开始时间" width="160">
+        <el-table-column prop="name" label="名字" width="100" show-overflow-tooltip />
+
+        <el-table-column prop="orgId" label="公司ID" width="100" align="center" />
+
+        <el-table-column prop="overdueStartTime" label="逾期开始时间" width="160" show-overflow-tooltip>
           <template #default="{ row }">
             {{ formatDate(row.overdueStartTime) }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="agentStartTime" label="代理开始日期" width="160">
-          <template #default="{ row }">
-            {{ formatDate(row.agentStartTime) }}
-          </template>
-        </el-table-column>
+        <el-table-column prop="phone" label="电话" width="130" />
 
-        <el-table-column prop="agentEndTime" label="代理截止日期" width="160">
-          <template #default="{ row }">
-            {{ formatDate(row.agentEndTime) }}
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="applicantId" label="申请人ID" width="100" align="center" />
-        <el-table-column prop="respondentId" label="债务人ID" width="100" align="center" />
         <el-table-column prop="productId" label="产品ID" width="100" align="center" />
-        <el-table-column prop="orgId" label="公司ID" width="100" align="center" />
-        <el-table-column prop="userGroupId" label="催收组ID" width="100" align="center" show-overflow-tooltip />
-        <el-table-column prop="userId" label="用户ID" width="100" align="center" />
 
-        <el-table-column prop="createTime" label="创建时间" width="160">
+        <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
+
+        <el-table-column prop="respondentId" label="债务人ID" width="100" align="center" />
+
+        <el-table-column prop="sex" label="性别" width="70" align="center">
           <template #default="{ row }">
-            {{ formatDate(row.createTime) }}
+            <el-tag :type="row.sex === 1 ? '' : 'danger'" size="small">
+              {{ row.sex === 1 ? '男' : '女' }}
+            </el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column prop="updateTime" label="修改时间" width="160">
+        <el-table-column prop="updateTime" label="修改时间" width="160" show-overflow-tooltip>
           <template #default="{ row }">
             {{ formatDate(row.updateTime) }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="userGroupId" label="催收组ID" width="100" align="center" show-overflow-tooltip />
+
+        <el-table-column prop="userId" label="用户ID" width="100" align="center" />
 
         <el-table-column label="操作" width="240" fixed="right" align="center">
           <template #default="{ row }">
@@ -234,8 +246,8 @@ const getCaseStatusText = (status: number) => {
     6: "停催",
     10: "结清",
     12: "已删除",
-    13: "在催-普通留案",
-    14: "在催-特殊留案"
+    13: "在催-普通留案中",
+    14: "在催-特殊留案中"
   };
   return statusMap[status] || `未知状态(${status})`;
 };
