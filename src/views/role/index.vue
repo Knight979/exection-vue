@@ -420,10 +420,25 @@ const handlePermissionCheck = () => {
 // 保存权限
 const handleSavePermission = async () => {
   try {
-    console.log('selectedPermissionIds', selectedPermissionIds)
+    if (!currentRoleForPermission.value) {
+      ElMessage.error('角色信息不存在')
+      return
+    }
+    
     permissionLoading.value = true
-    // TODO: 调用API保存权限
-    await saveRolePermissionTree()
+    
+    // 获取选中的权限树节点ID列表
+    const menuIds = permissionTreeRef.value?.getCheckedKeys() as string[]
+    const roleId = currentRoleForPermission.value.roleId
+    
+    console.log('保存权限参数:', { roleId, menuIds })
+    
+    // 调用API保存权限，传入 roleId 和 menuIds
+    await saveRolePermissionTree({
+      roleId,
+      menuIds
+    })
+    
     ElMessage.success('权限配置成功')
     permissionDialogVisible.value = false
   } catch (error) {

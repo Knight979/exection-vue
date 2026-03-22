@@ -65,7 +65,8 @@ export enum MenuType {
 
 // 权限菜单接口
 export interface PermissionMenu {
-  roleId?: string
+  roleId?: string       // 角色id
+  menuIds?: string[]    // 菜单id 列表,用于保存角色权限配置
   menuId: string
   menuName: string
   parentId: string
