@@ -93,186 +93,102 @@
     </el-card>
   
     <!-- 数据表格 -->
+    <!-- 数据表格 -->
     <el-card shadow="never">
       <el-table v-loading="loading" :data="tableData" stripe border>
-        <el-table-column
-          prop="id"
-          label="编号"
-          width="60"
-          align="center"
-          fixed="left"
-        />
-        
-        <el-table-column
-          prop="name"
-          label="被申请人"
-          width="100"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="idcard"
-          label="身份证号"
-          width="180"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="phone"
-          label="电话号码"
-          width="130"
-        />
-        <el-table-column
-          prop="productName"
-          label="产品"
-          width="150"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="applicantName"
-          label="申请人"
-          width="200"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="middleCaseNo"
-          label="中院执行案号"
-          width="180"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="basicCaseNo"
-          label="基层执行案号"
-          width="180"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="middleCourt"
-          label="中级法院"
-          width="120"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="basicCourt"
-          label="基础法院"
-          width="120"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="debtTotal"
-          label="债务总额"
-          width="100"
-          align="right"
-        >
+        <!-- <el-table-column type="selection" width="55" align="center" /> -->
+        <!-- 被申请人信息 -->
+        <el-table-column prop="name" label="被申请人" width="100" show-overflow-tooltip />
+        <el-table-column prop="sex" label="性别" width="60" align="center">
           <template #default="{ row }">
-            <span style="color: #f56c6c; font-weight: bold">
-              {{ formatAmount(row.debtTotal) }}
-            </span>
+            {{ row.sex === 1 ? '男' : '女' }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="caseStep"
-          label="执行阶段"
-          width="100"
-          align="center"
-        />
-        <el-table-column
-          prop="zxCaseStatus"
-          label="执行状态"
-          width="100"
-          align="center"
-        />
-        <el-table-column
-          prop="caseStatus"
-          label="案件状态"
-          width="80"
-          align="center"
-        >
+        <el-table-column prop="idcard" label="身份证号" width="180" show-overflow-tooltip />
+        <el-table-column prop="phone" label="电话号码" width="130" />
+
+        <!-- 案件基本信息 -->
+        <el-table-column prop="middleCaseNo" label="中院执行案号" width="180" show-overflow-tooltip />
+        <el-table-column prop="basicCaseNo" label="基层执行案号" width="180" show-overflow-tooltip />
+
+        <!-- 法院信息 -->
+        <el-table-column prop="middleCourt" label="中级法院" width="120" show-overflow-tooltip />
+        <el-table-column prop="basicCourt" label="基础法院" width="120" show-overflow-tooltip />
+        <el-table-column prop="basicFlag" label="执行类型" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="getCaseStatusType(row.caseStatus)">
-              {{ getCaseStatusText(row.caseStatus) }}
+            <el-tag :type="row.basicFlag ? 'success' : 'primary'">
+              {{ row.basicFlag ? '基层执行' : '中院执行' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="casePool"
-          label="类型"
-          width="80"
-          align="center"
-        >
+
+        <!-- 地区信息 -->
+        <el-table-column prop="province" label="省份" width="100" show-overflow-tooltip />
+        <el-table-column prop="city" label="城市" width="100" show-overflow-tooltip />
+        <el-table-column prop="area" label="区县" width="100" show-overflow-tooltip />
+
+        <!-- 债务信息 -->
+        <el-table-column prop="penaltyInterest" label="利息罚息" width="100" align="right">
+          <template #default="{ row }">
+            {{ formatAmount(row.penaltyInterest) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="delayInterest" label="迟延履行金" width="100" align="right">
+          <template #default="{ row }">
+            {{ formatAmount(row.delayInterest) }}
+          </template>
+        </el-table-column>
+
+        <!-- 案件状态 -->
+        <el-table-column prop="caseStep" label="执行阶段" width="100" align="center" />
+        <el-table-column prop="caseStatus" label="案件状态" width="150" align="center">
+          <template #default="{ row }">
+            {{ row.caseStatus }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="casePool" label="类型" width="80" align="center">
           <template #default="{ row }">
             <el-tag :type="row.casePool === 0 ? '' : 'success'">
               {{ row.casePool === 0 ? '仲裁' : '执行' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="instalment"
-          label="分期标记"
-          width="100"
-          align="center"
-        >
+        <el-table-column prop="instalment" label="分期标记" width="100" align="center">
           <template #default="{ row }">
             {{ row.instalment === 1 ? '是' : '否' }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="netTime"
-          label="网申时间"
-          width="160"
-        >
+
+        <!-- 时间信息 -->
+        <el-table-column prop="netTime" label="网申时间" width="160">
           <template #default="{ row }">
             {{ formatDate(row.netTime) }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="overdueStartTime"
-          label="逾期开始时间"
-          width="120"
-        >
+        <el-table-column prop="middleAcceptDay" label="中院受理日期" width="120">
           <template #default="{ row }">
-            {{ formatDate(row.overdueStartTime) }}
+            {{ formatDate(row.middleAcceptDay) }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="agentStartTime"
-          label="委案开始时间"
-          width="120"
-        >
+        <el-table-column prop="basicAcceptDay" label="基层立案时间" width="120">
           <template #default="{ row }">
-            {{ formatDate(row.agentStartTime) }}
+            {{ formatDate(row.basicAcceptDay) }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="agentEndTime"
-          label="委案结束时间"
-          width="120"
-        >
-          <template #default="{ row }">
-            {{ formatDate(row.agentEndTime) }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="updateTime"
-          label="修改时间"
-          width="160"
-        >
-          <template #default="{ row }">
-            {{ formatDateTime(row.updateTime) }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="remark"
-          label="备注"
-          min-width="200"
-          show-overflow-tooltip
-        />
+
+        <!-- 执行信息 -->
+        <el-table-column prop="middleUpJudge" label="中院立案法官" width="120" show-overflow-tooltip />
+        <el-table-column prop="middleUpPhone" label="中院立案电话" width="130" show-overflow-tooltip />
+        <el-table-column prop="middleExJudge" label="中院执行法官" width="120" show-overflow-tooltip />
+        <el-table-column prop="middleExPhone" label="中院执行电话" width="130" show-overflow-tooltip />
+        <el-table-column prop="basicUpJudge" label="基层立案法官" width="120" show-overflow-tooltip />
+        <el-table-column prop="basicUpPhone" label="基层立案电话" width="130" show-overflow-tooltip />
+        <el-table-column prop="basicExJudge" label="基层执行法官" width="120" show-overflow-tooltip />
+        <el-table-column prop="basicExPhone" label="基层执行电话" width="130" show-overflow-tooltip />
+
         <el-table-column label="操作" width="100" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button
-              type="primary"
-              link
-              :icon="View"
-              @click="handleView(row)"
-            >
+            <el-button type="primary" link :icon="View" @click="handleView(row)">
               查看
             </el-button>
           </template>
@@ -281,17 +197,13 @@
 
       <!-- 分页 -->
       <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="pagination.pageNum"
-          v-model:page-size="pagination.pageSize"
-          :total="pagination.total"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <el-pagination v-model:current-page="pagination.pageNum" v-model:page-size="pagination.pageSize"
+          :total="pagination.total" :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange" @current-change="handleCurrentChange" />
       </div>
     </el-card>
+
+
   </div>
 </template>
 
@@ -413,7 +325,6 @@ const getCaseStatusType = (status?: number) => {
   }
   return typeMap[status] || 'info'
 }
-
 // 获取案件状态文本
 const getCaseStatusText = (status?: number) => {
   if (status === undefined || status === null) return '未知'

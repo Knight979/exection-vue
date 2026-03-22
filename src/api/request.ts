@@ -14,8 +14,10 @@ const service: AxiosInstance = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 从localStorage获取token
-    const token = localStorage.getItem('token')
+    // 优先从 localStorage 获取，因为 Pinia 持久化也是存这里的
+    // 如果使用了 pinia-plugin-persistedstate，默认 key 通常是 'user' 或其他
+    // 这里我们兼容处理，直接从 localStorage 读取 token
+    const token = localStorage.getItem('token') || JSON.parse(localStorage.getItem('user') || '{}').token
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -36,7 +38,6 @@ service.interceptors.response.use(
     if (code === '0') {
       return data
     }
-    
     // 业务错误
     ElMessage.error(msg || '请求失败')
     return Promise.reject(new Error(msg || '请求失败'))

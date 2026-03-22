@@ -296,7 +296,7 @@ const selectedRows = ref<any[]>([])
 
 // 分页
 const pagination = reactive({
-  pageNum: 1,
+  currPage: 1,
   pageSize: 20,
   total: 0
 })

@@ -64,10 +64,31 @@ export const routes: AppRouteRecordRaw[] = [
             name: 'ExecutionList',
             component: () => import('@/views/execution/index.vue'),
             meta: {
-              title: '执行案件',
+              title: '执行列表',
               requiresAuth: true
             }
           },
+          {
+            path: 'allocation',
+            name: 'CaseAllocationList',
+            component: () => import('@/views/caseAllocation/index.vue'),
+            meta: {
+              title: '案件分配',
+              requiresAuth: true
+            }
+          },
+
+          {
+            path: 'arbitration',
+            name: 'ArbitrationList',
+            component: () => import('@/views/arbitration/index.vue'),
+            meta: {
+              title: '仲裁案件',
+              requiresAuth: true
+            }
+          },
+
+
           {
             path: 'detail/:id',
             name: 'CaseDetail',
@@ -80,17 +101,19 @@ export const routes: AppRouteRecordRaw[] = [
           }
         ]
       },
+
       {
-        path: '/workOrder',
-        name: 'WorkOrder',
+        path: '/operations',
+        name: 'CheckApply',
         meta: {
-          title: '工单管理',
-          icon: 'List',
+          title: '运营管理',
+          icon: 'Money',
           requiresAuth: true
         },
         children: [
+
           {
-            path: 'list',
+            path: 'workOrder/list',
             name: 'WorkOrderList',
             component: () => import('@/views/workOrder/index.vue'),
             meta: {
@@ -99,7 +122,7 @@ export const routes: AppRouteRecordRaw[] = [
             }
           },
           {
-            path: 'detail/:id',
+            path: 'workOrder/detail/:id',
             name: 'WorkOrderDetail',
             component: () => import('@/views/workOrder/detail.vue'),
             meta: {
@@ -107,18 +130,8 @@ export const routes: AppRouteRecordRaw[] = [
               requiresAuth: true,
               hidden: true
             }
-          }
-        ]
-      },
-      {
-        path: '/checkApply',
-        name: 'CheckApply',
-        meta: {
-          title: '对账申请',
-          icon: 'Money',
-          requiresAuth: true
-        },
-        children: [
+          },
+
           {
             path: 'list',
             name: 'CheckApplyList',
@@ -140,26 +153,7 @@ export const routes: AppRouteRecordRaw[] = [
           }
         ]
       },
-      {
-        path: '/arbitration',
-        name: 'Arbitration',
-        meta: {
-          title: '仲裁案件',
-          icon: 'Management',
-          requiresAuth: true
-        },
-        children: [
-          {
-            path: 'list',
-            name: 'ArbitrationList',
-            component: () => import('@/views/arbitration/index.vue'),
-            meta: {
-              title: '仲裁案件列表',
-              requiresAuth: true
-            }
-          }
-        ]
-      },
+
       {
         path: '/execution/detail/:dataId',
         name: 'ExecutionDetail',
@@ -171,60 +165,38 @@ export const routes: AppRouteRecordRaw[] = [
         }
       },
       {
-        path: '/user',
-        name: 'User',
+        path: '/system',
+        name: 'System',
         meta: {
-          title: '用户管理',
-          icon: 'User',
+          title: '系统管理',
+          icon: 'Setting',
           requiresAuth: true
         },
         children: [
           {
-            path: 'list',
-            name: 'UserList',
+            path: 'user',
+            name: 'User',
             component: () => import('@/views/user/index.vue'),
             meta: {
-              title: '用户列表',
+              title: '用户管理',
               requiresAuth: true
             }
-          }
-        ]
-      },
-      {
-        path: '/role',
-        name: 'Role',
-        meta: {
-          title: '角色管理',
-          icon: 'Management',
-          requiresAuth: true
-        },
-        children: [
+          },
           {
-            path: 'list',
-            name: 'RoleList',
+            path: 'role',
+            name: 'Role',
             component: () => import('@/views/role/index.vue'),
             meta: {
               title: '角色列表',
               requiresAuth: true
             }
-          }
-        ]
-      },
-      {
-        path: '/permission',
-        name: 'Permission',
-        meta: {
-          title: '权限管理',
-          icon: 'Lock',
-          requiresAuth: true
-        },
-        children: [
+          },
           {
-            path: 'list',
-            name: 'PermissionList',
-            component: () => import('@/views/permission/index.vue'),
+            path: 'log',
+            name: 'LogList',
+            component: () => import('@/views/log/index.vue'),
             meta: {
-              title: '权限列表',
+              title: '日志列表',
               requiresAuth: true
             }
           }
@@ -250,26 +222,7 @@ export const routes: AppRouteRecordRaw[] = [
           }
         ]
       },
-      {
-        path: '/log',
-        name: 'Log',
-        meta: {
-          title: '操作日志',
-          icon: 'DocumentCopy',
-          requiresAuth: true
-        },
-        children: [
-          {
-            path: 'list',
-            name: 'LogList',
-            component: () => import('@/views/log/index.vue'),
-            meta: {
-              title: '日志列表',
-              requiresAuth: true
-            }
-          }
-        ]
-      },
+
       {
         path: '/import',
         name: 'Import',
@@ -290,26 +243,6 @@ export const routes: AppRouteRecordRaw[] = [
           }
         ]
       },
-      {
-        path: '/caseAllocation',
-        name: 'CaseAllocation',
-        meta: {
-          title: '案件分配',
-          icon: 'DocumentCopy',
-          requiresAuth: true
-        },
-        children: [
-          {
-            path: 'list',
-            name: 'CaseAllocationList',
-            component: () => import('@/views/caseAllocation/index.vue'),
-            meta: {
-              title: '案件分配',
-              requiresAuth: true
-            }
-          }
-        ]
-      }
     ]
   },
   {

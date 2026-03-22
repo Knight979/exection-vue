@@ -20,7 +20,9 @@ export const useUserStore = defineStore('user', () => {
   async function login(params: LoginParams) {
     try {
       const data = await loginApi(params)
-      token.value = data.token
+      token.value = data.token;
+      // 显式存入 localStorage，确保 request.ts 能直接读取
+      localStorage.setItem('token', data.token)
       // 保存用户名
       if (!userInfo.value) {
         userInfo.value = {} as User
