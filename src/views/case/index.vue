@@ -4,23 +4,26 @@
     <el-card class="search-card" shadow="never">
       <el-form :model="searchForm" :inline="true">
         <el-form-item label="姓名">
-          <el-input v-model="searchForm.name" placeholder="请输入案件编号" clearable style="width: 200px" />
+          <el-input v-model="searchForm.name" placeholder="请输入姓名" clearable style="width: 200px" />
         </el-form-item>
-        <!-- <el-form-item label="客户姓名">
-          <el-input v-model="searchForm.customerName" placeholder="请输入客户姓名" clearable style="width: 200px" />
+        <el-form-item label="身份证号">
+          <el-input v-model="searchForm.idcard" placeholder="请输入身份证号" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="借款编号">
-          <el-input v-model="searchForm.loanNo" placeholder="请输入借款编号" clearable style="width: 200px" />
+        <el-form-item label="手机号">
+          <el-input v-model="searchForm.phone" placeholder="请输入手机号" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="案件状态">
-          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px">
-            <el-option label="待分配" value="pending" />
-            <el-option label="已分配" value="assigned" />
-            <el-option label="进行中" value="in_progress" />
-            <el-option label="已结清" value="settled" />
-            <el-option label="坏账" value="bad_debt" />
+          <el-select v-model="searchForm.caseStatus" placeholder="请选择状态" clearable style="width: 180px">
+            <el-option label="待平台分案" :value="1" />
+            <el-option label="待分配坐席" :value="3" />
+            <el-option label="再催" :value="4" />
+            <el-option label="停催" :value="6" />
+            <el-option label="结清" :value="10" />
+            <el-option label="已删除" :value="12" />
+            <el-option label="在催-普通留案" :value="13" />
+            <el-option label="在催-特殊留案" :value="14" />
           </el-select>
-        </el-form-item> -->
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" :icon="Search" @click="handleSearch">
             搜索
@@ -48,98 +51,89 @@
     </el-card>
 
     <!-- 数据表格 -->
-    <!-- 数据表格 -->
     <el-card shadow="never">
       <el-table v-loading="loading" :data="tableData" stripe border @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="id" label="编号" width="60" align="center" fixed="left" />
-
-        <!-- 案件基本信息 -->
-        <el-table-column prop="name" label="被申请人" width="100" show-overflow-tooltip />
-        <el-table-column prop="sex" label="性别" width="60" align="center">
+        <el-table-column prop="id" label="编号" width="80" align="center" fixed="left" />
+        <el-table-column prop="dataId" label="数据ID" width="80" align="center" />
+        <el-table-column prop="name" label="名字" width="100" show-overflow-tooltip />
+        <el-table-column prop="sex" label="性别" width="70" align="center">
           <template #default="{ row }">
-            {{ row.sex === 1 ? '男' : '女' }}
+            <el-tag :type="row.sex === 1 ? '' : 'danger'" size="small">
+              {{ row.sex === 1 ? '男' : '女' }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="idcard" label="身份证号" width="180" show-overflow-tooltip />
-        <el-table-column prop="phone" label="电话号码" width="130" />
-
-        <!-- 借款信息 -->
-        <el-table-column prop="loanNo" label="借款编号" width="180" show-overflow-tooltip />
-        <el-table-column prop="productName" label="产品名称" width="150" show-overflow-tooltip />
-        <el-table-column prop="loanAmount" label="贷款金额" width="120" align="right">
-          <template #default="{ row }">
-            {{ formatAmount(row.loanAmount) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="debtAmount" label="欠款金额" width="120" align="right">
-          <template #default="{ row }">
-            <span style="color: #f56c6c">
-              {{ formatAmount(row.debtAmount) }}
-            </span>
-          </template>
-        </el-table-column>
-
-        <!-- 时间信息 -->
-        <el-table-column prop="contractTime" label="合同时间" width="120">
-          <template #default="{ row }">
-            {{ formatDate(row.contractTime) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="borrowStartTime" label="借款开始时间" width="120">
-          <template #default="{ row }">
-            {{ formatDate(row.borrowStartTime) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="borrowEndTime" label="借款结束时间" width="120">
-          <template #default="{ row }">
-            {{ formatDate(row.borrowEndTime) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="overdueStartTime" label="逾期开始时间" width="120">
-          <template #default="{ row }">
-            {{ formatDate(row.overdueStartTime) }}
-          </template>
-        </el-table-column>
-
-        <!-- 案件状态 -->
-        <el-table-column prop="caseStatus" label="案件状态" width="100" align="center">
+        <el-table-column prop="phone" label="电话" width="130" />
+        
+        <el-table-column prop="caseStatus" label="案件状态" width="150" align="center">
           <template #default="{ row }">
             <el-tag :type="getCaseStatusType(row.caseStatus)">
               {{ getCaseStatusText(row.caseStatus) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="casePool" label="类型" width="80" align="center">
+
+        <el-table-column prop="debtTotal" label="债务总额" width="120" align="right">
           <template #default="{ row }">
-            <el-tag :type="row.casePool === 0 ? '' : 'success'">
+            <span class="amount-text">{{ formatAmount(row.debtTotal) }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="casePool" label="处置类型" width="100" align="center">
+          <template #default="{ row }">
+            <el-tag :type="row.casePool === 0 ? 'warning' : 'success'" effect="plain">
               {{ row.casePool === 0 ? '仲裁' : '执行' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="instalment" label="分期标记" width="100" align="center">
+
+        <el-table-column prop="instalment" label="分期标记" width="90" align="center">
           <template #default="{ row }">
-            {{ row.instalment === 1 ? '是' : '否' }}
+            <el-tag :type="row.instalment === 1 ? 'success' : 'info'" size="small">
+              {{ row.instalment === 1 ? '是' : '否' }}
+            </el-tag>
           </template>
         </el-table-column>
 
-        <!-- 委案信息 -->
-        <el-table-column prop="agentStartTime" label="委案开始时间" width="120">
+        <el-table-column prop="overdueStartTime" label="逾期开始时间" width="160">
+          <template #default="{ row }">
+            {{ formatDate(row.overdueStartTime) }}
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="agentStartTime" label="代理开始日期" width="160">
           <template #default="{ row }">
             {{ formatDate(row.agentStartTime) }}
           </template>
         </el-table-column>
-        <el-table-column prop="agentEndTime" label="委案结束时间" width="120">
+
+        <el-table-column prop="agentEndTime" label="代理截止日期" width="160">
           <template #default="{ row }">
             {{ formatDate(row.agentEndTime) }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="updateTime" label="修改时间" width="160">
+        <el-table-column prop="applicantId" label="申请人ID" width="100" align="center" />
+        <el-table-column prop="respondentId" label="债务人ID" width="100" align="center" />
+        <el-table-column prop="productId" label="产品ID" width="100" align="center" />
+        <el-table-column prop="orgId" label="公司ID" width="100" align="center" />
+        <el-table-column prop="userGroupId" label="催收组ID" width="100" align="center" show-overflow-tooltip />
+        <el-table-column prop="userId" label="用户ID" width="100" align="center" />
+
+        <el-table-column prop="createTime" label="创建时间" width="160">
           <template #default="{ row }">
-            {{ formatDateTime(row.updateTime) }}
+            {{ formatDate(row.createTime) }}
           </template>
         </el-table-column>
+
+        <el-table-column prop="updateTime" label="修改时间" width="160">
+          <template #default="{ row }">
+            {{ formatDate(row.updateTime) }}
+          </template>
+        </el-table-column>
+
         <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
 
         <el-table-column label="操作" width="240" fixed="right" align="center">
@@ -188,13 +182,16 @@ import {
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { Case } from "@/types/case";
 import { getCaseList } from "@/api/case";
+import { formatDate, formatAmount } from "@/utils/format";
+
 const router = useRouter();
 
 // 搜索表单
 const searchForm = reactive({
   name: "",
-  userGroupId: "",
-  sex: "",
+  idcard: "",
+  phone: "",
+  caseStatus: undefined as number | undefined,
 });
 
 // 表格数据
@@ -213,64 +210,50 @@ const pagination = reactive({
 const fetchTableData = async () => {
   loading.value = true;
   try {
-    // TODO: 调用API获取数据
     const res = await getCaseList({
       ...searchForm,
       ...pagination,
     });
-    await new Promise(resolve => setTimeout(resolve, 500))
+    // 模拟网络延迟
+    await new Promise(resolve => setTimeout(resolve, 300))
     tableData.value = res.list;
     pagination.total = res.total;
-    loading.value = false;
   } catch (error) {
     ElMessage.error("获取案件列表失败");
   } finally {
     loading.value = false;
   }
 };
-// 获取案件状态
-// const getCaseStatus = (status: number) => {
-//   const statusMap: Record<number, string> = {
-//     0: "pending",
-//     1: "assigned",
-//     2: "in_progress",
-//     3: "settled",
-//     4: "bad_debt"
-//   };
-//   return statusMap[status] || "pending";
-// };
 
-// 格式化金额
-const formatAmount = (amount: number) => {
-  if (amount === undefined || amount === null) {
-    return "¥0.00";
-  }
-  return `¥${amount.toLocaleString("zh-CN", { minimumFractionDigits: 2 })}`;
+// 获取案件状态文本
+const getCaseStatusText = (status: number) => {
+  const statusMap: Record<number, string> = {
+    1: "待平台分案",
+    3: "待分配坐席",
+    4: "再催",
+    6: "停催",
+    10: "结清",
+    12: "已删除",
+    13: "在催-普通留案",
+    14: "在催-特殊留案"
+  };
+  return statusMap[status] || `未知状态(${status})`;
 };
 
-// 获取状态类型
-// const getStatusType = (status: string) => {
-//   const typeMap: Record<string, any> = {
-//     pending: "info",
-//     assigned: "",
-//     in_progress: "primary",
-//     settled: "success",
-//     bad_debt: "danger",
-//   };
-//   return typeMap[status] || "";
-// };
-
-// // 获取状态文本
-// const getStatusText = (status: string) => {
-//   const textMap: Record<string, string> = {
-//     pending: "待分配",
-//     assigned: "已分配",
-//     in_progress: "进行中",
-//     settled: "已结清",
-//     bad_debt: "坏账",
-//   };
-//   return textMap[status] || status;
-// };
+// 获取案件状态标签类型
+const getCaseStatusType = (status: number) => {
+  const typeMap: Record<number, string> = {
+    1: "info",
+    3: "warning",
+    4: "primary",
+    6: "danger",
+    10: "success",
+    12: "info",
+    13: "",
+    14: "warning"
+  };
+  return typeMap[status] || "";
+};
 
 // 搜索
 const handleSearch = () => {
@@ -281,9 +264,10 @@ const handleSearch = () => {
 // 重置
 const handleReset = () => {
   Object.assign(searchForm, {
-    customerName: "",
-    loanNo: "",
-    status: "",
+    name: "",
+    idcard: "",
+    phone: "",
+    caseStatus: undefined,
   });
   handleSearch();
 };
@@ -375,6 +359,12 @@ onMounted(() => {
       display: flex;
       gap: 8px;
     }
+  }
+
+  .amount-text {
+    font-family: Monaco, Consolas, monospace;
+    font-weight: bold;
+    color: #f56c6c;
   }
 
   .pagination-container {
